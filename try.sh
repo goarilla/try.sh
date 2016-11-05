@@ -7,6 +7,7 @@
 # Albert              en_US    #  I have a frog in my throat. No, I mean a real frog!
 
 VOICES="$(say -v ? | grep 'en_')"
+VOICELEN="$(echo "$VOICES" | wc -l)"
 
 get_val()
 {
@@ -16,12 +17,12 @@ get_val()
 
 score_speaker()
 {
-	# score between 1-30
+	# score between 1-30 (VOICELEN of 'en_' voices)
 	score=0
 	for char in $(echo "$1" | sed -e 's/./\ &/g'); do
 		score=$(( score+$(get_val $char) ))
 	done
-	echo $(( $((score%30))+1 ))
+	echo $(( $((score%VOICELEN))+1 ))
 
 }
 
