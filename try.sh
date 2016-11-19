@@ -3,12 +3,11 @@
 #
 # vim: set ts=4 sws=4 sw=4 smartindent tw=78:
 
-NAP=${NAP:-2}
+NAP=${NAP:-1}
 WIDTH=${WIDTH:-52}
-TICKS=${TICKS:-2}
 
 ###########################################
-#----------*----------------*-*-- *-------# 
+#----------+----------------+-+-- +-------+
 ###########################################
 ## STATUS: OK  ############################
 ## LASTRTT:    ############################
@@ -21,6 +20,17 @@ function _float_toint()
 	# truncates a float to int
 	[ $# -ne 1 ] && return 2
 	awk "END { print int($1) }" < /dev/null
+}
+
+function _float_gt()
+{
+	# $1 > $2
+	if [ x"$(echo "$1 > $2" | bc)" = x"1" ]; then
+		return 0
+	else
+		return 1
+	fi
+	return 2
 }
 
 function multiply_char()
@@ -41,7 +51,7 @@ function multiply_char()
 
 # all shifts are to the left
 #
-function shift_intlist()
+function shift_itemlist()
 {
 	# $1: rounds
 	# $2: rest line
@@ -145,12 +155,7 @@ function print_pongs_line()
 
 function print_border_line()
 {
-	i=0
-	while [ $i -lt $WIDTH ]; do
-		printf "%c" "#"
-		i=$((i+1))
-	done
-	printf "\n"
+	printf "%s\n" "$(multiply_char '#' $WIDTH)"
 }
 
 function print_footer_section()
@@ -213,9 +218,9 @@ function init_state()
 	i=0
 	while [ $i -lt $WIDTH ]; do
 		PONGSLINE="${PONGSLINE}#"
-		i=$((i+1))
+		i="$((i+1))"
 	done
-	PONGSLINE=$(echo $PONGSLINE)
+	PONGSLINE="$(echo $PONGSLINE)"
 
 	AVGRTT=0
 	MINRTT=0
@@ -236,26 +241,38 @@ function update_state()
 		LASTRTT=0
 	else
 		LASTRTT="$(echo "$2" | grep '^64\ bytes' | \
-			awk 'END { print $((NF-1))}'| cut -d'=' -f2)"
+			awk 'END { print $((NF-1)) }' | cut -d'=' -f2)"
 	fi
 
 	# update state
+	# $STATUS
+	[ x"$LASTRTT" != x"0" ] && STATUS=OK || STATUS=DEAD
+
 	# $LOSSES
-	[ "$LASTRTT" -eq 0 ] && LOSSES="$((LOSSES+1))"
+	[ "$(_float_toint "$LASTRTT")" -eq 0 ] && LOSSES="$((LOSSES+1))"
 
 	# $MAXRTT MAX(LASTRTT)
-	[ "$LASTRTT" -gt "$MAXRTT" ] && MAXRTT="$LASTRTT"
+	_float_gt "$LASTRTT" "$MAXRTT" && MAXRTT="$LASTRTT"
 
 	# $MINRTT MIN(LASTRTT)
-	[ "$MINRTT" -gt "$LASTRTT" ] && MINRTT="$LASTRTT"
+	[ x"$MINRTT" = x"0" ] && MINRTT="$LASTRTT"
+	_float_gt "$MINRTT" "$LASTRTT" && MINRTT="$LASTRTT"
 
 	# $AVGRTT
-	AVGRTT="$(echo "(5*$AVGRTT+10*LASTRTT)/15)" | bc)"
+	[ x"$AVGRTT" = x"0" ] && AVGRTT="$LASTRTT"
+	AVGRTT="$(echo "(5*$AVGRTT+10*LASTRTT)/15" | bc)"
 
 	# update intlist $PINGS
+	PINGS="$(shift_itemlist 1 $PINGS)"
+	PINGS="$PINGS $LASTRTT"
 
 	# update PONGSLINE
-
+	PONGSLINE="$(shift_string 1 "$PONGSLINE")"
+	if [ x"$LASTRTT" != x"0" ]; then
+		PONGSLINE="${PONGSLINE}+"
+	else
+		PONGSLINE="${PONGSLINE}-"
+	fi
 }
 
 function usage()
@@ -274,9 +291,9 @@ function main()
 	while (( 1 )); do
 		start="$(date '+%s.%S')"
 		# mac osx
-		output="$(ping -c 1 -t 1 "$1")"
+		output="$(ping -c 1 -t 1 "$1" 2>/dev/null)"
 		# linux
-		#output="$(ping -c 1 -w 1 "$1")"
+		#output="$(ping -c 1 -w 1 "$1" 2>/dev/null)"
 		rc=$?
 
 		#
@@ -292,3 +309,5 @@ function main()
 		fi
 	done
 }
+
+main "$@"
