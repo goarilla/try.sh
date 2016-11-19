@@ -335,7 +335,7 @@ function main()
 	init_state
 	while (( 1 )); do
 		start="$(date '+%s.%S')"
-		output="$("$PINGTOOL" "$HOST" 2>/dev/null)"
+		output="$($PINGTOOL "$HOST" 2>/dev/null)"
 		rc=$?
 
 		#
