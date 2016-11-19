@@ -1,4 +1,7 @@
 #! /bin/bash
+# try.sh [ping_top]
+#
+# vim: set ts=4 sws=4 sw=4 smartindent tw=78:
 
 NAP=${NAP:-2}
 WIDTH=${WIDTH:-40}
@@ -20,9 +23,6 @@ function _float_toint()
 }
 
 
-# all shifts are to the left
-#
-
 function multiply_char()
 {
 	# $1: char
@@ -40,6 +40,8 @@ function multiply_char()
 }
 
 
+# all shifts are to the left
+#
 function shift_intlist()
 {
 	# $1: rounds
@@ -74,47 +76,7 @@ function shift_string()
 }
 
 #### collection functions ####
-function first_element()
-{
-	# list
-	if [ $# -gt 1 ]; then
-		for arg; do
-			echo "$arg"
-			return
-		done
-
-	fi
-
-	# string
-	for i in $(echo "$1" | sed -e 's/./& /g'); do
-		echo "$i"
-		return
-	done
-	
-}
-
-function last_element()
-{
-	# list
-	last=""
-	if [ $# -gt 1 ]; then
-		for arg; do
-			last="$arg"
-		done
-		echo "$last"
-		return
-	fi
-
-	# string
-	last=""
-	for i in $(echo "$1" | sed -e 's/./& /g'); do
-		last="$i"
-		echo "$last"
-		return
-	done
-
-}
-
+#
 function nth_element()
 {
 	# which
@@ -139,17 +101,46 @@ function nth_element()
 
 	# string
 	i=0
-	[ $index -gt ${#1} ] && return 1
+	[ $index -gt ${#1} ] && return 1 # probably useless
 	for c in $(echo "$1" | sed -e 's/./& /g'); do
 		if [ $i -eq $index ]; then
 			echo "$c"
 			return 0
 		fi
+	        i=$((i+1))
 	done
 	
 	return 1	
 }
 
+
+function first_element()
+{
+	nth_element 0 "$@"
+}
+
+function last_element()
+{
+	args="$@"
+	i=0
+	for i in $(echo $args); do
+		i=$((i+1))
+	done
+
+	if [ "$i" -eq 1 ]; then
+		# assume string
+		# even though it could be a singleton list
+		last=0
+		for c in $(echo "$args" | sed -e 's/./\ &/g'); do
+			last=$((last+1))
+		done
+		nth_element "$last" "$@"
+		return $?
+	fi
+
+	nth_element "$i" "$@"
+	return $?
+}
 
 function next_ping_string()
 {
@@ -175,14 +166,16 @@ function length_line()
 	for c in $(echo "$*" | sed -e 's/./\ &/g'); do
 		i=$((i+1))
 	done
-	echo "$i" 
+	echo "$i"
 }
 
+# line-output functions
+#
 function print_pongs_line()
 {
 	# build on state
 	# update pongsline
-	echo "$PONGSLINE" 
+	echo "$PONGSLINE"
 }
 
 
@@ -209,18 +202,19 @@ function print_footer_section()
 	# LOSSES
 }
 
+#
+#
 function draw_new_screen()
 {
 	# wrapper procedure
-	[ $# -ne 0 ] && return 1
-        clear
+	[ $# -ne 0 ] && return
+	clear
 
 	print_border_line
 	print_pongs_line
 	print_border_line
 	print_footer_section
 	print_border_line
-	
 }
 
 
@@ -271,7 +265,10 @@ function update_state()
 :
 }
 
-
+function usage()
+{
+	:
+}
 
 function main()
 {
