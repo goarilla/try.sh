@@ -7,12 +7,12 @@ NAP=${NAP:-1}
 WIDTH=${WIDTH:-52}
 
 ## 192.168.1.1 ############################
-#----------+----------------+-+-- +-------+
+-----------+----------------+-+-- +-------+
 ###########################################
 ## STATUS: OK  ############################
 ## LASTRTT:    ############################
-## AVG:     |     MIN:   |    MAX: ########
-## LOSSES:   ##############################
+## AVG:     |  MIN:   |    MAX:  ##########
+## TOTAL:   | LOSSES:   ###################
 ###########################################
 
 function _float_toint()
@@ -208,8 +208,8 @@ function print_stats()
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
 
-	# LOSSES
-	msg="# LOSSES: ${LOSSES} "
+	# TOTAL # LOSSES
+	msg="# TOTAL: ${TOTAL} | LOSSES: ${LOSSES} "
 	rounds="$((WIDTH-${#msg}))"
 	padding="$(multiply_char '#' $rounds)"
 	msg="${msg}${padding}"
@@ -255,7 +255,7 @@ function init_state()
 	LOSSES=0
 	STATUS="-"
 
-
+	TOTAL=0
 }
 
 function update_state()
@@ -273,6 +273,9 @@ function update_state()
 	fi
 
 	# update state
+	# $TOTAL
+	TOTAL="$((TOTAL+1))"
+
 	# $STATUS
 	[ x"$LASTRTT" != x"0" ] && STATUS=OK || STATUS=DEAD
 
