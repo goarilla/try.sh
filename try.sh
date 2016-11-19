@@ -17,6 +17,7 @@ WIDTH=${WIDTH:-52}
 
 function _float_toint()
 {
+	#printf 1>&2 "%s\n" "_float_toint()"
 	# truncates a float to int
 	[ $# -ne 1 ] && return 2
 	awk "END { print int($1) }" < /dev/null
@@ -24,6 +25,7 @@ function _float_toint()
 
 function _float_gt()
 {
+	#printf 1>&2 "%s\n" "_float_gt()"
 	# $1 > $2
 	if [ x"$(echo "$1 > $2" | bc)" = x"1" ]; then
 		return 0
@@ -35,6 +37,7 @@ function _float_gt()
 
 function multiply_char()
 {
+	#printf 1>&2 "%s\n" "multiply_char()"
 	# $1: char
 	# $2: multiplier
 	[ $# -eq 1 ] && set -- "$@" 2
@@ -53,6 +56,7 @@ function multiply_char()
 #
 function shift_itemlist()
 {
+	#printf 1>&2 "%s\n" "shift_itemlist()"
 	# $1: rounds
 	# $2: rest line
 	[ $# -lt 2 ] && return 2
@@ -65,6 +69,7 @@ function shift_itemlist()
 
 function shift_string()
 {
+	#printf 1>&2 "%s\n" "shift_string()"
 	# $1: rounds
 	# $2: rest line
 	[ $# -lt 2 ] && return 2
@@ -85,6 +90,7 @@ function shift_string()
 #
 function nth_element()
 {
+	#printf 1>&2 "%s\n" "nth_element()"
 	# which
 	[ $# -lt 2 ] && return 2
 	index="$1"
@@ -120,11 +126,13 @@ function nth_element()
 
 function first_element()
 {
+	#printf 1>&2 "%s\n" "first_element()"
 	nth_element 0 "$@"
 }
 
 function last_element()
 {
+	#printf 1>&2 "%s\n" "last_element()"
 	args="$@"
 	i=0
 	for i in $(echo $args); do
@@ -150,25 +158,33 @@ function last_element()
 #
 function print_pongs_line()
 {
+	#printf 1>&2 "%s\n" "print_pongs_line()"
 	printf "%s\n" "$PONGSLINE"
 }
 
 function print_border_line()
 {
+	#printf 1>&2 "%s\n" "print_border_line()"
 	printf "%s\n" "$(multiply_char '#' $WIDTH)"
 }
 
 function print_header_line()
 {
+	#printf 1>&2 "%s\n" "print_header_line()"
 	# $1: host
 	[ $# -ne 1 ] && return 2
-	msg="### $1 "
-	msg="$msg "$(multiply_char '#' $((WIDTH-${#msg}-1)))""
+	msg=" $1 "
+	len="${#msg}"
+	mid="$(($((WIDTH-len))/2))"
+	rest="$(($((WIDTH-len))%2))"
+	msg="$(multiply_char '#' $mid)${msg}"
+	msg="${msg}$(multiply_char '#' $((mid+rest)))"
 	printf "%s\n" "$msg"
 }
 
-function print_footer_section()
+function print_stats()
 {
+	#printf 1>&2 "%s\n" "print_stats()"
 	# STATUS
 	msg="# STATUS:"
 	msg="${msg} ${STATUS} "
@@ -204,6 +220,7 @@ function print_footer_section()
 #
 function draw_new_screen()
 {
+	#printf 1>&2 "%s\n" "draw_new_screen()"
 	# wrapper procedure
 	[ $# -ne 0 ] && return
 	clear
@@ -211,13 +228,14 @@ function draw_new_screen()
 	print_header_line "$HOST"
 	print_pongs_line
 	print_border_line
-	print_footer_section
+	print_stats
 	print_border_line
 }
 
 
 function init_state()
 {
+	#printf 1>&2 "%s\n" "init_stat()"
 	#create global state
 	for i in $(seq 0 20); do
 		PINGS="$PINGS 0"
@@ -242,6 +260,7 @@ function init_state()
 
 function update_state()
 {
+	#printf 1>&2 "%s\n" "update_state()"
 	# $1: $? of ping command
 	# $2: output of ping command
 
@@ -269,7 +288,7 @@ function update_state()
 
 	# $AVGRTT
 	[ x"$AVGRTT" = x"0" ] && AVGRTT="$LASTRTT"
-	AVGRTT="$(echo "(5*$AVGRTT+10*LASTRTT)/15" | bc)"
+	AVGRTT="$(echo "scale=3;(5*$AVGRTT+10*$LASTRTT)/15" | bc -l)"
 
 	# update intlist $PINGS
 	PINGS="$(shift_itemlist 1 $PINGS)"
@@ -286,11 +305,13 @@ function update_state()
 
 function usage()
 {
+	#printf 1>&2 "%s\n" "usage()"
 	printf "Usage: %s ip|hostname\n" "$(basename "$0")"
 }
 
 function main()
 {
+	#printf 1>&2 "%s\n" "main()"
 	if [ $# -ne 1 ]; then
 		usage 1>&2
 		exit 1
