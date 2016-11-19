@@ -4,7 +4,7 @@
 # vim: set ts=4 sws=4 sw=4 smartindent tw=78:
 
 NAP=${NAP:-2}
-WIDTH=${WIDTH:-64}
+WIDTH=${WIDTH:-52}
 TICKS=${TICKS:-2}
 
 ###########################################
@@ -80,7 +80,6 @@ function nth_element()
 	index="$1"
 	shift
 
-
 	# list
 	if [ $# -gt 1 ]; then
 		[ $index -gt ${#@} ] && return 1
@@ -135,23 +134,6 @@ function last_element()
 
 	nth_element "$i" "$@"
 	return $?
-}
-
-function next_ping_string()
-{
-	# rotate_string wrapper
-	# direction fixed
-	# line fixed
-	#
-	# rounds 
-	# char
-
-	# if [ $# -eq 1 ] shift_string 1 $PINGS +  $lastchar $PINGS$@ $lastchar $PINGS
-	# if [ $# -eq 2 ] shift_string $rounds $PINGS + char + lengten(char)
-	[ $# -lt 2 ] && return 2
-	rounds="$1"
-	char="$2"
-
 }
 
 # print functions
@@ -246,25 +228,34 @@ function init_state()
 
 function update_state()
 {
-	# update global state
-	# parse ping output
-	# update intlist
-	# update $PONGSLINE
-	#
-	# $PINGS
-	# $LOSSES
-	# $AVGRTT #5*AVGRTT + 10*$now/3
-	# $MAXRTT MAX(AVGRTT)
-	# $MINRTT MIN(AVGRTT)
-	# #STATE #(DEAD|ALIVE)
-
 	# $1: $? of ping command
 	# $2: output of ping command
-	# ----------------------------- #
 
 	# parse ping output
+	if [ $1 -ne 0 ]; then
+		LASTRTT=0
+	else
+		LASTRTT="$(echo "$2" | grep '^64\ bytes' | \
+			awk 'END { print $((NF-1))}'| cut -d'=' -f2)"
+	fi
 
-:
+	# update state
+	# $LOSSES
+	[ "$LASTRTT" -eq 0 ] && LOSSES="$((LOSSES+1))"
+
+	# $MAXRTT MAX(LASTRTT)
+	[ "$LASTRTT" -gt "$MAXRTT" ] && MAXRTT="$LASTRTT"
+
+	# $MINRTT MIN(LASTRTT)
+	[ "$MINRTT" -gt "$LASTRTT" ] && MINRTT="$LASTRTT"
+
+	# $AVGRTT
+	AVGRTT="$(echo "(5*$AVGRTT+10*LASTRTT)/15)" | bc)"
+
+	# update intlist $PINGS
+
+	# update PONGSLINE
+
 }
 
 function usage()
@@ -282,7 +273,10 @@ function main()
 	init_state
 	while (( 1 )); do
 		start="$(date '+%s.%S')"
-		output="$(ping -w 1 "$1")"
+		# mac osx
+		output="$(ping -c 1 -t 1 "$1")"
+		# linux
+		#output="$(ping -c 1 -w 1 "$1")"
 		rc=$?
 
 		#
