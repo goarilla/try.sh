@@ -153,11 +153,6 @@ function next_ping_string()
 
 }
 
-function length_line()
-{
-	echo "${#1}"
-}
-
 # print functions
 #
 function print_pongs_line()
@@ -180,8 +175,7 @@ function print_footer_section()
 	# STATUS
 	msg="# STATUS:"
 	msg="${msg} ${STATUS} "
-	msglen="$(length_line "$msg")"
-	rounds="$((WIDTH-msglen))"
+	rounds="$((WIDTH-${#msg}))"
 	padding="$(multiply_char '#' $rounds)"
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
@@ -189,24 +183,21 @@ function print_footer_section()
 	# LASTRTT
 	msg="# LASTRTT:"
 	msg="${msg} ${LASTRTT} "
-	msglen="$(length_line "$msg")"
-	rounds="$((WIDTH-msglen))"
+	rounds="$((WIDTH-${#msg}))"
 	padding="$(multiply_char '#' $rounds)"
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
 
 	# AVGRTT # MAXRTT # MINRTT
 	msg="# AVGRTT: ${AVGRTT} | MAX: ${MAXRTT} | MIN: ${MINRTT} "
-	msglen="$(length_line "$msg")"
-	rounds="$((WIDTH-msglen))"
+	rounds="$((WIDTH-${#msg}))"
 	padding="$(multiply_char '#' $rounds)"
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
 
 	# LOSSES
 	msg="# LOSSES: ${LOSSES} "
-	msglen="$(length_line "$msg")"
-	rounds="$((WIDTH-msglen))"
+	rounds="$((WIDTH-${#msg}))"
 	padding="$(multiply_char '#' $rounds)"
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
