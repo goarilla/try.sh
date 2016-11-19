@@ -256,6 +256,7 @@ function init_state()
 	STATUS="-"
 
 	TOTAL=0
+	GOOD=0
 }
 
 function update_state()
@@ -291,7 +292,8 @@ function update_state()
 
 	# $AVGRTT
 	[ x"$AVGRTT" = x"0" ] && AVGRTT="$LASTRTT"
-	AVGRTT="$(echo "scale=3;(5*$AVGRTT+10*$LASTRTT)/15" | bc -l)"
+	GOOD="$((TOTAL-LOSSES))"
+	AVGRTT="$(echo "scale=3;(($GOOD-1)*$AVGRTT+$LASTRTT)/$GOOD" | bc -l)"
 
 	# update intlist $PINGS
 	PINGS="$(shift_itemlist 1 $PINGS)"
