@@ -49,7 +49,7 @@ function shift_intlist()
 	rounds="$1"
 	for i in $(seq 1 $rounds); do
 			shift
-		done
+	done
 	echo "$@"
 }
 
@@ -57,13 +57,14 @@ function shift_string()
 {
 	# $1: rounds
 	# $2: rest line
-	[ $@ -lt 2 ] && return 2
+	[ $# -lt 2 ] && return 2
 	rounds="$1"
 	string="$2"
 
 	len="${#string}"
-	while [ $len -gt $ronds ]; do
-		$len=$((len-1))
+	msg=""
+	while [ $len -gt $rounds ]; do
+		len=$((len-1))
 		msg="${msg}$(nth_element "$len" "$string")" 
 			
 	done
@@ -268,12 +269,15 @@ function update_state()
 
 function usage()
 {
-	:
+	printf "Usage: %s ip|hostname\n" "$(basename "$0")"
 }
 
 function main()
 {
-	[ $# -ne 1 ] && return 2
+	if [ $# -ne 1 ]; then
+		usage 1>&2
+		exit 1
+	fi
 
 	init_state
 	while (( 1 )); do
