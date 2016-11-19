@@ -4,7 +4,8 @@
 # vim: set ts=4 sws=4 sw=4 smartindent tw=78:
 
 NAP=${NAP:-2}
-WIDTH=${WIDTH:-40}
+WIDTH=${WIDTH:-64}
+TICKS=${TICKS:-2}
 
 ###########################################
 #----------*----------------*-*-- *-------# 
@@ -22,7 +23,6 @@ function _float_toint()
 	awk "END { print int($1) }" < /dev/null
 }
 
-
 function multiply_char()
 {
 	# $1: char
@@ -39,7 +39,6 @@ function multiply_char()
 	echo "$msg"
 }
 
-
 # all shifts are to the left
 #
 function shift_intlist()
@@ -52,8 +51,6 @@ function shift_intlist()
 			shift
 		done
 	echo "$@"
-	
-
 }
 
 function shift_string()
@@ -71,8 +68,6 @@ function shift_string()
 			
 	done
 	echo "$msg" | rev
-
-
 }
 
 #### collection functions ####
@@ -112,7 +107,6 @@ function nth_element()
 	
 	return 1	
 }
-
 
 function first_element()
 {
@@ -161,23 +155,15 @@ function next_ping_string()
 
 function length_line()
 {
-	# $*: line
-	i=0
-	for c in $(echo "$*" | sed -e 's/./\ &/g'); do
-		i=$((i+1))
-	done
-	echo "$i"
+	echo "${#1}"
 }
 
-# line-output functions
+# print functions
 #
 function print_pongs_line()
 {
-	# build on state
-	# update pongsline
-	echo "$PONGSLINE"
+	printf "%s\n" "$PONGSLINE"
 }
-
 
 function print_border_line()
 {
@@ -192,14 +178,38 @@ function print_border_line()
 function print_footer_section()
 {
 	# STATUS
-	msg="# STATUS: "
-	msg="${msg} $STATUS "
-	echo "$msg"
-	rounds="$((40-${#msg}))"
-	echo
+	msg="# STATUS:"
+	msg="${msg} ${STATUS} "
+	msglen="$(length_line "$msg")"
+	rounds="$((WIDTH-msglen))"
+	padding="$(multiply_char '#' $rounds)"
+	msg="${msg}${padding}"
+	printf "%s\n" "$msg"
+
 	# LASTRTT
+	msg="# LASTRTT:"
+	msg="${msg} ${LASTRTT} "
+	msglen="$(length_line "$msg")"
+	rounds="$((WIDTH-msglen))"
+	padding="$(multiply_char '#' $rounds)"
+	msg="${msg}${padding}"
+	printf "%s\n" "$msg"
+
 	# AVGRTT # MAXRTT # MINRTT
+	msg="# AVGRTT: ${AVGRTT} | MAX: ${MAXRTT} | MIN: ${MINRTT} "
+	msglen="$(length_line "$msg")"
+	rounds="$((WIDTH-msglen))"
+	padding="$(multiply_char '#' $rounds)"
+	msg="${msg}${padding}"
+	printf "%s\n" "$msg"
+
 	# LOSSES
+	msg="# LOSSES: ${LOSSES} "
+	msglen="$(length_line "$msg")"
+	rounds="$((WIDTH-msglen))"
+	padding="$(multiply_char '#' $rounds)"
+	msg="${msg}${padding}"
+	printf "%s\n" "$msg"
 }
 
 #
@@ -235,9 +245,9 @@ function init_state()
 
 	AVGRTT=0
 	MINRTT=0
-	MAXRT=0
+	MAXRTT=0
 	LOSSES=0
-	STATE="-"
+	STATUS="-"
 
 
 }
