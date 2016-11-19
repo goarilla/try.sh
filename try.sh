@@ -321,13 +321,21 @@ function main()
 	fi
 	HOST="$1"
 
+	# which ping
+	case "$(uname -a)" in *Linux*)
+		# Linux
+		PINGTOOL="ping -w 1 -c 1"
+		;;
+		*)
+		# other (MacOSX/*BSD)
+		PINGTOOL="ping -t 1 -c 1"
+		;;
+	esac
+
 	init_state
 	while (( 1 )); do
 		start="$(date '+%s.%S')"
-		# mac osx
-		output="$(ping -c 1 -t 1 "$HOST" 2>/dev/null)"
-		# linux
-		#output="$(ping -c 1 -w 1 "$HOST" 2>/dev/null)"
+		output="$("$PINGTOOL" "$HOST" 2>/dev/null)"
 		rc=$?
 
 		#
