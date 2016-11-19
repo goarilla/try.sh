@@ -6,7 +6,7 @@
 NAP=${NAP:-1}
 WIDTH=${WIDTH:-52}
 
-###########################################
+## 192.168.1.1 ############################
 #----------+----------------+-+-- +-------+
 ###########################################
 ## STATUS: OK  ############################
@@ -158,6 +158,15 @@ function print_border_line()
 	printf "%s\n" "$(multiply_char '#' $WIDTH)"
 }
 
+function print_header_line()
+{
+	# $1: host
+	[ $# -ne 1 ] && return 2
+	msg="### $1 "
+	msg="$msg "$(multiply_char '#' $((WIDTH-${#msg}-1)))""
+	printf "%s\n" "$msg"
+}
+
 function print_footer_section()
 {
 	# STATUS
@@ -199,7 +208,7 @@ function draw_new_screen()
 	[ $# -ne 0 ] && return
 	clear
 
-	print_border_line
+	print_header_line "$HOST"
 	print_pongs_line
 	print_border_line
 	print_footer_section
@@ -286,14 +295,15 @@ function main()
 		usage 1>&2
 		exit 1
 	fi
+	HOST="$1"
 
 	init_state
 	while (( 1 )); do
 		start="$(date '+%s.%S')"
 		# mac osx
-		output="$(ping -c 1 -t 1 "$1" 2>/dev/null)"
+		output="$(ping -c 1 -t 1 "$HOST" 2>/dev/null)"
 		# linux
-		#output="$(ping -c 1 -w 1 "$1" 2>/dev/null)"
+		#output="$(ping -c 1 -w 1 "$HOST" 2>/dev/null)"
 		rc=$?
 
 		#
