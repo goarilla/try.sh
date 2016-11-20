@@ -250,7 +250,7 @@ function init_state()
 	PONGSLINE="$(echo $PONGSLINE)"
 
 	AVGRTT=0
-	MINRTT=0
+	MINRTT=9999
 	MAXRTT=0
 	LOSSES=0
 	STATUS="-"
@@ -287,8 +287,8 @@ function update_state()
 	_float_gt "$LASTRTT" "$MAXRTT" && MAXRTT="$LASTRTT"
 
 	# $MINRTT MIN(LASTRTT)
-	[ x"$MINRTT" = x"0" ] && MINRTT="$LASTRTT"
-	_float_gt "$MINRTT" "$LASTRTT" && MINRTT="$LASTRTT"
+	[ x"$LASTRTT" != x"0" ] && _float_gt "$MINRTT" "$LASTRTT" && \
+		MINRTT="$LASTRTT"
 
 	# $AVGRTT
 	[ x"$AVGRTT" = x"0" ] && AVGRTT="$LASTRTT"
