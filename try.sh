@@ -281,7 +281,7 @@ function update_state()
 	[ x"$LASTRTT" != x"0" ] && STATUS=OK || STATUS=DEAD
 
 	# $LOSSES
-	[ "$(_float_toint "$LASTRTT")" -eq 0 ] && LOSSES="$((LOSSES+1))"
+	[ x"$LASTRTT" = x"0" ] && LOSSES="$((LOSSES+1))"
 
 	# $MAXRTT MAX(LASTRTT)
 	_float_gt "$LASTRTT" "$MAXRTT" && MAXRTT="$LASTRTT"
@@ -294,6 +294,7 @@ function update_state()
 	[ x"$AVGRTT" = x"0" ] && AVGRTT="$LASTRTT"
 	GOOD="$((TOTAL-LOSSES))"
 	AVGRTT="$(echo "scale=3;(($GOOD-1)*$AVGRTT+$LASTRTT)/$GOOD" | bc -l)"
+	[ x"$(first_element "$AVGRTT")" = x"." ] && AVGRTT="0${AVGRTT}"
 
 	# update intlist $PINGS
 	PINGS="$(shift_itemlist 1 $PINGS)"
