@@ -293,7 +293,9 @@ function update_state()
 	# $AVGRTT
 	[ x"$AVGRTT" = x"0" ] && AVGRTT="$LASTRTT"
 	GOOD="$((TOTAL-LOSSES))"
-	AVGRTT="$(echo "scale=3;(($GOOD-1)*$AVGRTT+$LASTRTT)/$GOOD" | bc -l)"
+	if [ $GOOD -gt 0 ]; then
+		AVGRTT="$(echo "scale=3;(($GOOD-1)*$AVGRTT+$LASTRTT)/$GOOD" | bc -l)"
+	fi
 	[ x"$(first_element "$AVGRTT")" = x"." ] && AVGRTT="0${AVGRTT}"
 
 	# update intlist $PINGS
