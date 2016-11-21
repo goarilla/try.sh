@@ -61,7 +61,7 @@ shift_itemlist()
 	# $2: rest line
 	[ $# -lt 2 ] && return 2
 	rounds="$1"
-	for i in $(seq 1 $rounds); do
+	for ((i=1;i<=$rounds;i++)); do
 			shift
 	done
 	echo "$@"
@@ -237,7 +237,7 @@ init_state()
 {
 	#printf 1>&2 "%s\n" "init_stat()"
 	#create global state
-	for i in $(seq 0 20); do
+	for ((i=0;i<=20;i++)); do
 		PINGS="$PINGS 0"
 	done
 
