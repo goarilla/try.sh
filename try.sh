@@ -15,7 +15,7 @@ WIDTH=${WIDTH:-52}
 ## TOTAL:   | LOSSES:   ###################
 ###########################################
 
-function _float_toint()
+_float_toint()
 {
 	#printf 1>&2 "%s\n" "_float_toint()"
 	# truncates a float to int
@@ -23,7 +23,7 @@ function _float_toint()
 	awk "END { print int($1) }" < /dev/null
 }
 
-function _float_gt()
+_float_gt()
 {
 	#printf 1>&2 "%s\n" "_float_gt()"
 	# $1 > $2
@@ -35,7 +35,7 @@ function _float_gt()
 	return 2
 }
 
-function multiply_char()
+multiply_char()
 {
 	#printf 1>&2 "%s\n" "multiply_char()"
 	# $1: char
@@ -54,7 +54,7 @@ function multiply_char()
 
 # all shifts are to the left
 #
-function shift_itemlist()
+shift_itemlist()
 {
 	#printf 1>&2 "%s\n" "shift_itemlist()"
 	# $1: rounds
@@ -67,7 +67,7 @@ function shift_itemlist()
 	echo "$@"
 }
 
-function shift_string()
+shift_string()
 {
 	#printf 1>&2 "%s\n" "shift_string()"
 	# $1: rounds
@@ -88,7 +88,7 @@ function shift_string()
 
 #### collection functions ####
 #
-function nth_element()
+nth_element()
 {
 	#printf 1>&2 "%s\n" "nth_element()"
 	# which
@@ -124,13 +124,13 @@ function nth_element()
 	return 1	
 }
 
-function first_element()
+first_element()
 {
 	#printf 1>&2 "%s\n" "first_element()"
 	nth_element 0 "$@"
 }
 
-function last_element()
+last_element()
 {
 	#printf 1>&2 "%s\n" "last_element()"
 	args="$@"
@@ -156,19 +156,19 @@ function last_element()
 
 # print functions
 #
-function print_pongs_line()
+print_pongs_line()
 {
 	#printf 1>&2 "%s\n" "print_pongs_line()"
 	printf "%s\n" "$PONGSLINE"
 }
 
-function print_border_line()
+print_border_line()
 {
 	#printf 1>&2 "%s\n" "print_border_line()"
 	printf "%s\n" "$(multiply_char '#' $WIDTH)"
 }
 
-function print_header_line()
+print_header_line()
 {
 	#printf 1>&2 "%s\n" "print_header_line()"
 	# $1: host
@@ -182,7 +182,7 @@ function print_header_line()
 	printf "%s\n" "$msg"
 }
 
-function print_stats()
+print_stats()
 {
 	#printf 1>&2 "%s\n" "print_stats()"
 	# STATUS
@@ -218,7 +218,7 @@ function print_stats()
 
 #
 #
-function draw_new_screen()
+draw_new_screen()
 {
 	#printf 1>&2 "%s\n" "draw_new_screen()"
 	# wrapper procedure
@@ -233,7 +233,7 @@ function draw_new_screen()
 }
 
 
-function init_state()
+init_state()
 {
 	#printf 1>&2 "%s\n" "init_stat()"
 	#create global state
@@ -259,7 +259,7 @@ function init_state()
 	GOOD=0
 }
 
-function update_state()
+update_state()
 {
 	#printf 1>&2 "%s\n" "update_state()"
 	# $1: $? of ping command
@@ -311,13 +311,13 @@ function update_state()
 	fi
 }
 
-function usage()
+usage()
 {
 	#printf 1>&2 "%s\n" "usage()"
 	printf "Usage: %s ip|hostname\n" "$(basename "$0")"
 }
 
-function main()
+main()
 {
 	#printf 1>&2 "%s\n" "main()"
 	if [ $# -ne 1 ]; then
