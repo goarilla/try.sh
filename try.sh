@@ -237,7 +237,7 @@ init_state()
 {
 	#printf 1>&2 "%s\n" "init_stat()"
 	#create global state
-	for ((i=0;i<=20;i++)); do
+	for ((i=0;i<WIDTH;i++)); do
 		PINGS="$PINGS 0"
 	done
 
