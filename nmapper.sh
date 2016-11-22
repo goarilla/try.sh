@@ -1,5 +1,10 @@
 #! /bin/sh
+# nmapper.sh
 #
+# Moi, The FTP-server Explorer.
+#
+# vim: set ts=4 sws=4 sw=4 smartindent tw=78:
+
 SPREAD=${SPREAD:-30}
 BOTTOM=${BOTTOM:-30}
 
