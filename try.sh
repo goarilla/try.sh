@@ -144,11 +144,11 @@ update_state()
 
 	## update state
 	# PINGS array
-	for ((i=0;i<"$(($WIDTH-1))";i++)); do
+	for ((i=0;i<"${#PINGS[@]}";i++)); do
 		PINGS[$i]="${PINGS[$((i+1))]}"
 	done
 	# fresh value
-	PINGS[$((WIDTH-1))]="$LASTRTT"
+	PINGS["${#PINGS[@]}"]="$LASTRTT"
 
 	# $TOTAL
 	TOTAL="$((TOTAL+1))"
@@ -173,18 +173,6 @@ update_state()
 		AVGRTT="$(echo "scale=3;(($GOOD-1)*$AVGRTT+$LASTRTT)/$GOOD" | bc -l)"
 	fi
 	[ x"$(first_char "$AVGRTT")" = x"." ] && AVGRTT="0${AVGRTT}"
-
-	## TODO: replace shift_itemlist and PINGS string with
-	## bash array and shift_array
-	##
-	## instead of building a string ...
-	## we go over the floats and write the line
-	##
-	# ! shift_itemlist is buggy !
-	#
-	#PINGS="$(shift_itemlist 2 $PINGS)"
-	#PINGS="$PINGS $LASTRTT"
-
 }
 
 usage()
