@@ -67,8 +67,8 @@ draw_new_screen()
 
 	# print pongsline
 	for val in "${PINGS[@]}"; do
-		[ x"$val" = x"0" ] && printf "-" && continue
-		[[ $val = [0-9][0-9.]* ]] && printf "+" && continue
+		[ x"$val" = x"0" ] && { printf "-"; continue; }
+		[[ $val = [0-9][0-9.]* ]] && { printf "+"; continue; }
 		printf "%c" "$val"
 	done
 	printf "\n"
@@ -111,7 +111,6 @@ draw_new_screen()
 	printf "%s\n" "$(multiply_char '#' $WIDTH)"
 }
 
-
 init_state()
 {
 	# create global state
@@ -144,11 +143,11 @@ update_state()
 
 	## update state
 	# PINGS array
-	for ((i=0;i<"${#PINGS[@]}";i++)); do
+	for ((i=0;i<"$((${#PINGS[@]}-1))";i++)); do
 		PINGS[$i]="${PINGS[$((i+1))]}"
 	done
 	# fresh value
-	PINGS["${#PINGS[@]}"]="$LASTRTT"
+	PINGS[$i]="$LASTRTT"
 
 	# $TOTAL
 	TOTAL="$((TOTAL+1))"
