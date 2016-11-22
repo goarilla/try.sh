@@ -15,14 +15,6 @@ WIDTH=${WIDTH:-52}
 ## TOTAL:   | LOSSES:   ###################
 ###########################################
 
-_float_toint()
-{
-	#printf 1>&2 "%s\n" "_float_toint()"
-	# truncates a float to int
-	[ $# -ne 1 ] && return 2
-	awk "END { print int($1) }" < /dev/null
-}
-
 _float_gt()
 {
 	#printf 1>&2 "%s\n" "_float_gt()"
@@ -257,7 +249,7 @@ main()
 		delta="$(echo "$end-$start" | bc )"
 		diff="$(echo "$NAP - $delta + 0.01" | bc)"
 		if [ "$(echo "$diff >= 1" | bc)" -eq 1 ]; then
-			sleep "$(_float_toint "$diff")"
+			sleep "$(echo "$diff" | awk 'END { print int($1) }')"
 		fi
 	done
 }
