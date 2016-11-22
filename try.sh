@@ -7,7 +7,7 @@ NAP=${NAP:-1}
 WIDTH=${WIDTH:-52}
 
 ## 192.168.1.1 ############################
-#-----------+----------------+-+-- +-------
+#-----------+----------------+-+---+-------
 ###########################################
 ## STATUS: OK  ############################
 ## LASTRTT:    ############################
@@ -42,25 +42,6 @@ multiply_char()
 	echo "$msg"
 }
 
-# all shifts are to the left
-#
-shift_itemlist()
-{
-	# $1: rounds
-	# $2: rest line
-	[ $# -lt 2 ] && return 2
-	rounds="$1"
-	for ((i=1;i<=$rounds;i++)); do
-			shift
-	done
-	echo "$@"
-}
-
-shift_array()
-{
-	:
-}
-
 first_char()
 {
 	# $1: input string
@@ -70,8 +51,6 @@ first_char()
 	return $?
 }
 
-#
-#
 draw_new_screen()
 {
 	[ $# -ne 0 ] && return
@@ -87,7 +66,7 @@ draw_new_screen()
 	printf "%s\n" "$msg"
 
 	# print pongsline
-	for val in $PINGS; do
+	for val in "${PINGS[@]}"; do
 		[ x"$val" = x"0" ] && printf "-" && continue
 		[[ $val = [0-9][0-9.]* ]] && printf "+" && continue
 		printf "%c" "$val"
@@ -136,8 +115,8 @@ draw_new_screen()
 init_state()
 {
 	# create global state
-	for ((i=0;i<WIDTH;i++)); do
-		PINGS="$PINGS #"
+	for ((i=0;i<"$WIDTH";i++)); do
+		PINGS[$i]="#"
 	done
 
 	AVGRTT=0
@@ -163,7 +142,14 @@ update_state()
 			awk 'END { print $((NF-1)) }' | cut -d'=' -f2)"
 	fi
 
-	# update state
+	## update state
+	# PINGS array
+	for ((i=0;i<"$(($WIDTH-1))";i++)); do
+		PINGS[$i]="${PINGS[$((i+1))]}"
+	done
+	# fresh value
+	PINGS[$((WIDTH-1))]="$LASTRTT"
+
 	# $TOTAL
 	TOTAL="$((TOTAL+1))"
 
@@ -196,8 +182,8 @@ update_state()
 	##
 	# ! shift_itemlist is buggy !
 	#
-	PINGS="$(shift_itemlist 2 $PINGS)"
-	PINGS="$PINGS $LASTRTT"
+	#PINGS="$(shift_itemlist 2 $PINGS)"
+	#PINGS="$PINGS $LASTRTT"
 
 }
 
@@ -245,4 +231,4 @@ main()
 	done
 }
 
-main "$@"
+#main "$@"
