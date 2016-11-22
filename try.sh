@@ -67,90 +67,18 @@ shift_itemlist()
 	echo "$@"
 }
 
-shift_string()
+shift_array()
 {
-	#printf 1>&2 "%s\n" "shift_string()"
-	# $1: rounds
-	# $2: rest line
-	[ $# -lt 2 ] && return 2
-	rounds="$1"
-	string="$2"
-
-	len="${#string}"
-	msg=""
-	while [ $len -gt $rounds ]; do
-		len=$((len-1))
-		msg="${msg}$(nth_element "$len" "$string")" 
-			
-	done
-	echo "$msg" | rev
+	:
 }
 
-#### collection functions ####
-#
-nth_element()
+first_char()
 {
-	#printf 1>&2 "%s\n" "nth_element()"
-	# which
-	[ $# -lt 2 ] && return 2
-	index="$1"
-	shift
+	#printf 1>&2 "%s\n" "first_char()"
+	# $1: input string
+	[ $# -ne 1 ] && return 2
 
-	# list
-	if [ $# -gt 1 ]; then
-		[ $index -gt ${#@} ] && return 1
-		i=0
-		for arg; do
-			if [ $i -eq $index ]; then
-				echo "$arg"
-				return 0
-			fi
-			i=$((i+1))					
-		done
-		return 1
-	fi
-
-	# string
-	i=0
-	[ $index -gt ${#1} ] && return 1 # probably useless
-	for c in $(echo "$1" | sed -e 's/./& /g'); do
-		if [ $i -eq $index ]; then
-			echo "$c"
-			return 0
-		fi
-	        i=$((i+1))
-	done
-	
-	return 1	
-}
-
-first_element()
-{
-	#printf 1>&2 "%s\n" "first_element()"
-	nth_element 0 "$@"
-}
-
-last_element()
-{
-	#printf 1>&2 "%s\n" "last_element()"
-	args="$@"
-	i=0
-	for i in $(echo $args); do
-		i=$((i+1))
-	done
-
-	if [ "$i" -eq 1 ]; then
-		# assume string
-		# even though it could be a singleton list
-		last=0
-		for c in $(echo "$args" | sed -e 's/./\ &/g'); do
-			last=$((last+1))
-		done
-		nth_element "$last" "$@"
-		return $?
-	fi
-
-	nth_element "$i" "$@"
+	echo "$1" | sed -e 's/^\(.\).*/\1/g'
 	return $?
 }
 
@@ -171,8 +99,13 @@ draw_new_screen()
 	msg="${msg}$(multiply_char '#' $((mid+rest)))"
 	printf "%s\n" "$msg"
 
-	# print pongs
-	printf "%s\n" "$PONGSLINE"
+	# print pongsline
+	for val in $PINGS; do
+		[ x"$val" = x"0" ] && printf "-" && continue
+		[[ $val = [0-9][0-9.]* ]] && printf "+" && continue
+		printf "%c" "$val"
+	done
+	printf "\n"
 
 	# print border/spacer line
 	printf "%s\n" "$(multiply_char '#' $WIDTH)"
@@ -218,16 +151,8 @@ init_state()
 	#printf 1>&2 "%s\n" "init_stat()"
 	# create global state
 	for ((i=0;i<WIDTH;i++)); do
-		PINGS="$PINGS 0"
+		PINGS="$PINGS #"
 	done
-
-	PONGSLINE=""
-	i=0
-	while [ $i -lt $WIDTH ]; do
-		PONGSLINE="${PONGSLINE}#"
-		i="$((i+1))"
-	done
-	PONGSLINE="$(echo $PONGSLINE)"
 
 	AVGRTT=0
 	MINRTT=9999
@@ -276,19 +201,19 @@ update_state()
 	if [ $GOOD -gt 0 ]; then
 		AVGRTT="$(echo "scale=3;(($GOOD-1)*$AVGRTT+$LASTRTT)/$GOOD" | bc -l)"
 	fi
-	[ x"$(first_element "$AVGRTT")" = x"." ] && AVGRTT="0${AVGRTT}"
+	[ x"$(first_char "$AVGRTT")" = x"." ] && AVGRTT="0${AVGRTT}"
 
-	# update intlist $PINGS
-	PINGS="$(shift_itemlist 1 $PINGS)"
+	## TODO: replace shift_itemlist and PINGS string with
+	## bash array and shift_array
+	##
+	## instead of building a string ...
+	## we go over the floats and write the line
+	##
+	# ! shift_itemlist is buggy !
+	#
+	PINGS="$(shift_itemlist 2 $PINGS)"
 	PINGS="$PINGS $LASTRTT"
 
-	# update PONGSLINE
-	PONGSLINE="$(shift_string 1 "$PONGSLINE")"
-	if [ x"$LASTRTT" != x"0" ]; then
-		PONGSLINE="${PONGSLINE}+"
-	else
-		PONGSLINE="${PONGSLINE}-"
-	fi
 }
 
 usage()
