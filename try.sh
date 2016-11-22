@@ -159,11 +159,10 @@ last_element()
 draw_new_screen()
 {
 	#printf 1>&2 "%s\n" "draw_new_screen()"
-	# wrapper procedure
 	[ $# -ne 0 ] && return
 	clear
 
-	#print_header_line "$HOST"
+	# print header
 	msg=" $HOST "
 	len="${#msg}"
 	mid="$(($((WIDTH-len))/2))"
@@ -172,13 +171,13 @@ draw_new_screen()
 	msg="${msg}$(multiply_char '#' $((mid+rest)))"
 	printf "%s\n" "$msg"
 
-	#print_pongs_line
+	# print pongs
 	printf "%s\n" "$PONGSLINE"
 
-	#print_border_line
+	# print border/spacer line
 	printf "%s\n" "$(multiply_char '#' $WIDTH)"
 
-	#print_stats
+	# print stats
 	# STATUS
 	msg="# STATUS:"
 	msg="${msg} ${STATUS} "
@@ -209,7 +208,7 @@ draw_new_screen()
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
 
-	#print_border_line
+	# print border/spacer line
 	printf "%s\n" "$(multiply_char '#' $WIDTH)"
 }
 
@@ -217,7 +216,7 @@ draw_new_screen()
 init_state()
 {
 	#printf 1>&2 "%s\n" "init_stat()"
-	#create global state
+	# create global state
 	for ((i=0;i<WIDTH;i++)); do
 		PINGS="$PINGS 0"
 	done
