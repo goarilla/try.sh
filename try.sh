@@ -26,17 +26,17 @@ _float_gt()
 	return 2
 }
 
-multiply_char()
+multiply_string()
 {
-	# $1: char
-	# $2: multiplier
-	[ $# -eq 1 ] && set -- "$@" 2
+	# $1: multiplier
+	# $2: string
+	[ $# -eq 1 ] && set -- 2 "$@"
 	[ $# -ne 2 ] && return 2
 	msg=""
-	multiplier="$2"
+	multiplier="$1"
 
-	while [ $multiplier -gt 0 ]; do
-		msg="${msg}$1"
+	while [ "$multiplier" -gt 0 ]; do
+		msg="${msg}"$2""
 		multiplier="$((multiplier-1))"
 	done
 	echo "$msg"
@@ -61,8 +61,8 @@ draw_new_screen()
 	len="${#msg}"
 	mid="$(($((WIDTH-len))/2))"
 	rest="$(($((WIDTH-len))%2))"
-	msg="$(multiply_char '#' $mid)${msg}"
-	msg="${msg}$(multiply_char '#' $((mid+rest)))"
+	msg="$(multiply_string "$mid" '#')${msg}"
+	msg="${msg}$(multiply_string $((mid+rest)) '#')"
 	printf "%s\n" "$msg"
 
 	# print pongsline
@@ -74,14 +74,14 @@ draw_new_screen()
 	printf "\n"
 
 	# print border/spacer line
-	printf "%s\n" "$(multiply_char '#' $WIDTH)"
+	printf "%s\n" "$(multiply_string "$WIDTH" '#')"
 
 	# print stats
 	# STATUS
 	msg="# STATUS:"
 	msg="${msg} ${STATUS} "
 	rounds="$((WIDTH-${#msg}))"
-	padding="$(multiply_char '#' $rounds)"
+	padding="$(multiply_string "$rounds" '#')"
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
 
@@ -89,26 +89,26 @@ draw_new_screen()
 	msg="# LASTRTT:"
 	msg="${msg} ${LASTRTT} "
 	rounds="$((WIDTH-${#msg}))"
-	padding="$(multiply_char '#' $rounds)"
+	padding="$(multiply_string "$rounds" '#')"
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
 
 	# AVGRTT # MAXRTT # MINRTT
 	msg="# AVGRTT: ${AVGRTT} | MAX: ${MAXRTT} | MIN: ${MINRTT} "
 	rounds="$((WIDTH-${#msg}))"
-	padding="$(multiply_char '#' $rounds)"
+	padding="$(multiply_string "$rounds" '#')"
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
 
 	# TOTAL # LOSSES
 	msg="# TOTAL: ${TOTAL} | LOSSES: ${LOSSES} "
 	rounds="$((WIDTH-${#msg}))"
-	padding="$(multiply_char '#' $rounds)"
+	padding="$(multiply_string "$rounds" '#')"
 	msg="${msg}${padding}"
 	printf "%s\n" "$msg"
 
 	# print border/spacer line
-	printf "%s\n" "$(multiply_char '#' $WIDTH)"
+	printf "%s\n" "$(multiply_string "$WIDTH" '#')"
 }
 
 init_state()
