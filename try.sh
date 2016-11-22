@@ -17,7 +17,6 @@ WIDTH=${WIDTH:-52}
 
 _float_gt()
 {
-	#printf 1>&2 "%s\n" "_float_gt()"
 	# $1 > $2
 	if [ x"$(echo "$1 > $2" | bc)" = x"1" ]; then
 		return 0
@@ -29,7 +28,6 @@ _float_gt()
 
 multiply_char()
 {
-	#printf 1>&2 "%s\n" "multiply_char()"
 	# $1: char
 	# $2: multiplier
 	[ $# -eq 1 ] && set -- "$@" 2
@@ -48,7 +46,6 @@ multiply_char()
 #
 shift_itemlist()
 {
-	#printf 1>&2 "%s\n" "shift_itemlist()"
 	# $1: rounds
 	# $2: rest line
 	[ $# -lt 2 ] && return 2
@@ -66,7 +63,6 @@ shift_array()
 
 first_char()
 {
-	#printf 1>&2 "%s\n" "first_char()"
 	# $1: input string
 	[ $# -ne 1 ] && return 2
 
@@ -78,7 +74,6 @@ first_char()
 #
 draw_new_screen()
 {
-	#printf 1>&2 "%s\n" "draw_new_screen()"
 	[ $# -ne 0 ] && return
 	clear
 
@@ -140,7 +135,6 @@ draw_new_screen()
 
 init_state()
 {
-	#printf 1>&2 "%s\n" "init_stat()"
 	# create global state
 	for ((i=0;i<WIDTH;i++)); do
 		PINGS="$PINGS #"
@@ -158,7 +152,6 @@ init_state()
 
 update_state()
 {
-	#printf 1>&2 "%s\n" "update_state()"
 	# $1: $? of ping command
 	# $2: output of ping command
 
@@ -210,13 +203,11 @@ update_state()
 
 usage()
 {
-	#printf 1>&2 "%s\n" "usage()"
 	printf "Usage: %s ip|hostname\n" "$(basename "$0")"
 }
 
 main()
 {
-	#printf 1>&2 "%s\n" "main()"
 	if [ $# -ne 1 ]; then
 		usage 1>&2
 		exit 1
