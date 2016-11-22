@@ -225,11 +225,54 @@ draw_new_screen()
 	[ $# -ne 0 ] && return
 	clear
 
-	print_header_line "$HOST"
-	print_pongs_line
-	print_border_line
-	print_stats
-	print_border_line
+	#print_header_line "$HOST"
+	msg=" $HOST "
+	len="${#msg}"
+	mid="$(($((WIDTH-len))/2))"
+	rest="$(($((WIDTH-len))%2))"
+	msg="$(multiply_char '#' $mid)${msg}"
+	msg="${msg}$(multiply_char '#' $((mid+rest)))"
+	printf "%s\n" "$msg"
+
+	#print_pongs_line
+	printf "%s\n" "$PONGSLINE"
+
+	#print_border_line
+	printf "%s\n" "$(multiply_char '#' $WIDTH)"
+
+	#print_stats
+	# STATUS
+	msg="# STATUS:"
+	msg="${msg} ${STATUS} "
+	rounds="$((WIDTH-${#msg}))"
+	padding="$(multiply_char '#' $rounds)"
+	msg="${msg}${padding}"
+	printf "%s\n" "$msg"
+
+	# LASTRTT
+	msg="# LASTRTT:"
+	msg="${msg} ${LASTRTT} "
+	rounds="$((WIDTH-${#msg}))"
+	padding="$(multiply_char '#' $rounds)"
+	msg="${msg}${padding}"
+	printf "%s\n" "$msg"
+
+	# AVGRTT # MAXRTT # MINRTT
+	msg="# AVGRTT: ${AVGRTT} | MAX: ${MAXRTT} | MIN: ${MINRTT} "
+	rounds="$((WIDTH-${#msg}))"
+	padding="$(multiply_char '#' $rounds)"
+	msg="${msg}${padding}"
+	printf "%s\n" "$msg"
+
+	# TOTAL # LOSSES
+	msg="# TOTAL: ${TOTAL} | LOSSES: ${LOSSES} "
+	rounds="$((WIDTH-${#msg}))"
+	padding="$(multiply_char '#' $rounds)"
+	msg="${msg}${padding}"
+	printf "%s\n" "$msg"
+
+	#print_border_line
+	printf "%s\n" "$(multiply_char '#' $WIDTH)"
 }
 
 
